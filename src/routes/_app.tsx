@@ -5,13 +5,14 @@ import { useTheme } from "@/hooks/use-theme";
 import { NotificationBell } from "@/components/notification-bell";
 import {
   LayoutDashboard, ListChecks, Smile, Wallet, Sparkles,
-  CalendarDays, NotebookPen, FileBarChart, Sun, Moon, LogOut, Activity, Menu, X,
+  CalendarDays, NotebookPen, FileBarChart, Sun, Moon, LogOut, Activity, Menu, X, LifeBuoy,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app")({ component: AppLayout });
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/assistant", label: "Helper / Assistant", icon: LifeBuoy },
   { to: "/tasks", label: "Tasks", icon: ListChecks },
   { to: "/mood", label: "Mood", icon: Smile },
   { to: "/expenses", label: "Expenses", icon: Wallet },
