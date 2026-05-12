@@ -23,7 +23,7 @@ import { Route as AppMoodRouteImport } from './routes/_app/mood'
 import { Route as AppInsightsRouteImport } from './routes/_app/insights'
 import { Route as AppExpensesRouteImport } from './routes/_app/expenses'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
-import { Route as AppInsightsDateRouteImport } from './routes/_app/insights.$date'
+import { Route as AppInsightsDateRouteImport } from './routes/_app/insights_.$date'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -95,9 +95,9 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   getParentRoute: () => AppRoute,
 } as any)
 const AppInsightsDateRoute = AppInsightsDateRouteImport.update({
-  id: '/$date',
-  path: '/$date',
-  getParentRoute: () => AppInsightsRoute,
+  id: '/insights_/$date',
+  path: '/insights/$date',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -108,7 +108,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard': typeof AppDashboardRoute
   '/expenses': typeof AppExpensesRoute
-  '/insights': typeof AppInsightsRouteWithChildren
+  '/insights': typeof AppInsightsRoute
   '/mood': typeof AppMoodRoute
   '/notes': typeof AppNotesRoute
   '/planner': typeof AppPlannerRoute
@@ -124,7 +124,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard': typeof AppDashboardRoute
   '/expenses': typeof AppExpensesRoute
-  '/insights': typeof AppInsightsRouteWithChildren
+  '/insights': typeof AppInsightsRoute
   '/mood': typeof AppMoodRoute
   '/notes': typeof AppNotesRoute
   '/planner': typeof AppPlannerRoute
@@ -142,13 +142,13 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/expenses': typeof AppExpensesRoute
-  '/_app/insights': typeof AppInsightsRouteWithChildren
+  '/_app/insights': typeof AppInsightsRoute
   '/_app/mood': typeof AppMoodRoute
   '/_app/notes': typeof AppNotesRoute
   '/_app/planner': typeof AppPlannerRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/tasks': typeof AppTasksRoute
-  '/_app/insights/$date': typeof AppInsightsDateRoute
+  '/_app/insights_/$date': typeof AppInsightsDateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,7 +199,7 @@ export interface FileRouteTypes {
     | '/_app/planner'
     | '/_app/reports'
     | '/_app/tasks'
-    | '/_app/insights/$date'
+    | '/_app/insights_/$date'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -311,48 +311,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/insights/$date': {
-      id: '/_app/insights/$date'
-      path: '/$date'
+    '/_app/insights_/$date': {
+      id: '/_app/insights_/$date'
+      path: '/insights/$date'
       fullPath: '/insights/$date'
       preLoaderRoute: typeof AppInsightsDateRouteImport
-      parentRoute: typeof AppInsightsRoute
+      parentRoute: typeof AppRoute
     }
   }
 }
 
-interface AppInsightsRouteChildren {
-  AppInsightsDateRoute: typeof AppInsightsDateRoute
-}
-
-const AppInsightsRouteChildren: AppInsightsRouteChildren = {
-  AppInsightsDateRoute: AppInsightsDateRoute,
-}
-
-const AppInsightsRouteWithChildren = AppInsightsRoute._addFileChildren(
-  AppInsightsRouteChildren,
-)
-
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppExpensesRoute: typeof AppExpensesRoute
-  AppInsightsRoute: typeof AppInsightsRouteWithChildren
+  AppInsightsRoute: typeof AppInsightsRoute
   AppMoodRoute: typeof AppMoodRoute
   AppNotesRoute: typeof AppNotesRoute
   AppPlannerRoute: typeof AppPlannerRoute
   AppReportsRoute: typeof AppReportsRoute
   AppTasksRoute: typeof AppTasksRoute
+  AppInsightsDateRoute: typeof AppInsightsDateRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppExpensesRoute: AppExpensesRoute,
-  AppInsightsRoute: AppInsightsRouteWithChildren,
+  AppInsightsRoute: AppInsightsRoute,
   AppMoodRoute: AppMoodRoute,
   AppNotesRoute: AppNotesRoute,
   AppPlannerRoute: AppPlannerRoute,
   AppReportsRoute: AppReportsRoute,
   AppTasksRoute: AppTasksRoute,
+  AppInsightsDateRoute: AppInsightsDateRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

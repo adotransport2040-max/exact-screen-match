@@ -9,7 +9,7 @@ import {
 import { format, parseISO, addDays, subDays, isValid } from "date-fns";
 import { useCurrency } from "@/lib/currency";
 
-export const Route = createFileRoute("/_app/insights/$date")({ component: DayDetailPage });
+export const Route = createFileRoute("/_app/insights_/$date")({ component: DayDetailPage });
 
 const MOODS = [
   { v: "happy", e: "😊" }, { v: "neutral", e: "😐" }, { v: "tired", e: "😴" },
