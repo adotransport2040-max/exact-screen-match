@@ -57,9 +57,13 @@ function AppLayout() {
       {/* Sidebar (desktop) */}
       <aside className="hidden w-64 shrink-0 border-r bg-card/40 p-4 lg:block">
         <Link to="/dashboard" className="mb-6 flex items-center gap-2 px-1">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary text-primary-foreground"><Activity className="h-4 w-4" /></div>
-          <span className="font-semibold">Life Analytics</span>
+          <div className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-primary text-primary-foreground shadow-elegant"><Activity className="h-4 w-4" /></div>
+          <div className="flex flex-col leading-tight">
+            <span className="font-semibold">Life Analytics</span>
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground">Built by Bishal</span>
+          </div>
         </Link>
+
         <NavList />
         <div className="mt-6 space-y-1 border-t pt-4">
           <button onClick={toggle} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground">
