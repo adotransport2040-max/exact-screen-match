@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/ui-kit";
 import {
   ChevronLeft, ChevronRight, ListChecks, Wallet, NotebookPen,
-  CalendarDays, Smile, Clock, Smartphone, Plus, Check, Trash2, Pencil, X,
+  CalendarDays, Smile, Clock, Smartphone, Check, Pencil, X,
 } from "lucide-react";
 import {
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays,
