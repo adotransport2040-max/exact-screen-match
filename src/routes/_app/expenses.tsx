@@ -7,6 +7,7 @@ import { Plus, Trash2, Pencil, ChevronLeft, ChevronRight, X, TrendingDown, Trend
 import { format, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { toast } from "sonner";
+import { CURRENCIES, useCurrency } from "@/lib/currency";
 
 export const Route = createFileRoute("/_app/expenses")({ component: ExpensesPage });
 
@@ -18,14 +19,6 @@ const ICONS: Record<string, any> = { Food: UtensilsCrossed, Travel: Plane, Study
 
 type Expense = { id: string; amount: number; category: string; description: string | null; expense_date: string };
 
-const CURRENCIES = [
-  { code: "NPR", symbol: "Rs.", label: "Nepali Rupee" },
-  { code: "INR", symbol: "₹", label: "Indian Rupee" },
-  { code: "QAR", symbol: "﷼", label: "Qatari Riyal" },
-  { code: "JPY", symbol: "¥", label: "Japanese Yen" },
-  { code: "USD", symbol: "$", label: "US Dollar" },
-  { code: "AUD", symbol: "A$", label: "Australian Dollar" },
-] as const;
 const fmt = (sym: string, n: number, decimals = 2) => `${sym}${n.toFixed(decimals)}`;
 
 function ExpensesPage() {
