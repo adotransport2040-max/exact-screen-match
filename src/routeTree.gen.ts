@@ -23,6 +23,7 @@ import { Route as AppMoodRouteImport } from './routes/_app/mood'
 import { Route as AppInsightsRouteImport } from './routes/_app/insights'
 import { Route as AppExpensesRouteImport } from './routes/_app/expenses'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppInsightsDateRouteImport } from './routes/_app/insights.$date'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -93,6 +94,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppInsightsDateRoute = AppInsightsDateRouteImport.update({
+  id: '/$date',
+  path: '/$date',
+  getParentRoute: () => AppInsightsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -102,12 +108,13 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard': typeof AppDashboardRoute
   '/expenses': typeof AppExpensesRoute
-  '/insights': typeof AppInsightsRoute
+  '/insights': typeof AppInsightsRouteWithChildren
   '/mood': typeof AppMoodRoute
   '/notes': typeof AppNotesRoute
   '/planner': typeof AppPlannerRoute
   '/reports': typeof AppReportsRoute
   '/tasks': typeof AppTasksRoute
+  '/insights/$date': typeof AppInsightsDateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,12 +124,13 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard': typeof AppDashboardRoute
   '/expenses': typeof AppExpensesRoute
-  '/insights': typeof AppInsightsRoute
+  '/insights': typeof AppInsightsRouteWithChildren
   '/mood': typeof AppMoodRoute
   '/notes': typeof AppNotesRoute
   '/planner': typeof AppPlannerRoute
   '/reports': typeof AppReportsRoute
   '/tasks': typeof AppTasksRoute
+  '/insights/$date': typeof AppInsightsDateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,12 +142,13 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/expenses': typeof AppExpensesRoute
-  '/_app/insights': typeof AppInsightsRoute
+  '/_app/insights': typeof AppInsightsRouteWithChildren
   '/_app/mood': typeof AppMoodRoute
   '/_app/notes': typeof AppNotesRoute
   '/_app/planner': typeof AppPlannerRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/tasks': typeof AppTasksRoute
+  '/_app/insights/$date': typeof AppInsightsDateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/reports'
     | '/tasks'
+    | '/insights/$date'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/reports'
     | '/tasks'
+    | '/insights/$date'
   id:
     | '__root__'
     | '/'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/_app/planner'
     | '/_app/reports'
     | '/_app/tasks'
+    | '/_app/insights/$date'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -299,13 +311,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/insights/$date': {
+      id: '/_app/insights/$date'
+      path: '/$date'
+      fullPath: '/insights/$date'
+      preLoaderRoute: typeof AppInsightsDateRouteImport
+      parentRoute: typeof AppInsightsRoute
+    }
   }
 }
+
+interface AppInsightsRouteChildren {
+  AppInsightsDateRoute: typeof AppInsightsDateRoute
+}
+
+const AppInsightsRouteChildren: AppInsightsRouteChildren = {
+  AppInsightsDateRoute: AppInsightsDateRoute,
+}
+
+const AppInsightsRouteWithChildren = AppInsightsRoute._addFileChildren(
+  AppInsightsRouteChildren,
+)
 
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppExpensesRoute: typeof AppExpensesRoute
-  AppInsightsRoute: typeof AppInsightsRoute
+  AppInsightsRoute: typeof AppInsightsRouteWithChildren
   AppMoodRoute: typeof AppMoodRoute
   AppNotesRoute: typeof AppNotesRoute
   AppPlannerRoute: typeof AppPlannerRoute
@@ -316,7 +347,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppExpensesRoute: AppExpensesRoute,
-  AppInsightsRoute: AppInsightsRoute,
+  AppInsightsRoute: AppInsightsRouteWithChildren,
   AppMoodRoute: AppMoodRoute,
   AppNotesRoute: AppNotesRoute,
   AppPlannerRoute: AppPlannerRoute,
@@ -337,3 +368,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
