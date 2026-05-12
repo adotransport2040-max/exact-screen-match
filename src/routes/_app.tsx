@@ -83,8 +83,11 @@ function AppLayout() {
           <aside className="absolute left-0 top-0 h-full w-72 border-r bg-card p-4 shadow-glow">
             <div className="mb-6 flex items-center justify-between">
               <Link to="/dashboard" className="flex items-center gap-2">
-                <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary text-primary-foreground"><Activity className="h-4 w-4" /></div>
-                <span className="font-semibold">Life Analytics</span>
+                <div className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-primary text-primary-foreground"><Activity className="h-4 w-4" /></div>
+                <div className="flex flex-col leading-tight">
+                  <span className="font-semibold">Life Analytics</span>
+                  <span className="text-[10px] font-medium tracking-wide text-muted-foreground">Built by Bishal</span>
+                </div>
               </Link>
               <button onClick={() => setOpen(false)} className="rounded-lg p-2 hover:bg-accent"><X className="h-4 w-4" /></button>
             </div>
