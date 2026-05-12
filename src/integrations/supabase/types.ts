@@ -14,7 +14,237 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          mood: string | null
+          note: string | null
+          screen_time: number
+          study_hours: number
+          updated_at: string
+          user_id: string
+          work_hours: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date: string
+          mood?: string | null
+          note?: string | null
+          screen_time?: number
+          study_hours?: number
+          updated_at?: string
+          user_id: string
+          work_hours?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          mood?: string | null
+          note?: string | null
+          screen_time?: number
+          study_hours?: number
+          updated_at?: string
+          user_id?: string
+          work_hours?: number
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string | null
+          expense_date: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          description?: string | null
+          expense_date?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          expense_date?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          link: string | null
+          read: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          read?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          read?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      planner_events: {
+        Row: {
+          completed: boolean
+          created_at: string
+          description: string | null
+          event_date: string
+          event_time: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          notify_upcoming: boolean
+          onboarded: boolean
+          reminder_email: string | null
+          reminder_phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          notify_upcoming?: boolean
+          onboarded?: boolean
+          reminder_email?: string | null
+          reminder_phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          notify_upcoming?: boolean
+          onboarded?: boolean
+          reminder_email?: string | null
+          reminder_phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          completed: boolean
+          created_at: string
+          duration_minutes: number
+          id: string
+          task_date: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          task_date?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          task_date?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
