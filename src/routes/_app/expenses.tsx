@@ -7,6 +7,7 @@ import { Plus, Trash2, Pencil, ChevronLeft, ChevronRight, X, TrendingDown, Trend
 import { format, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { toast } from "sonner";
+import { CURRENCIES, useCurrency } from "@/lib/currency";
 
 export const Route = createFileRoute("/_app/expenses")({ component: ExpensesPage });
 
@@ -18,14 +19,6 @@ const ICONS: Record<string, any> = { Food: UtensilsCrossed, Travel: Plane, Study
 
 type Expense = { id: string; amount: number; category: string; description: string | null; expense_date: string };
 
-const CURRENCIES = [
-  { code: "NPR", symbol: "Rs.", label: "Nepali Rupee" },
-  { code: "INR", symbol: "₹", label: "Indian Rupee" },
-  { code: "QAR", symbol: "﷼", label: "Qatari Riyal" },
-  { code: "JPY", symbol: "¥", label: "Japanese Yen" },
-  { code: "USD", symbol: "$", label: "US Dollar" },
-  { code: "AUD", symbol: "A$", label: "Australian Dollar" },
-] as const;
 const fmt = (sym: string, n: number, decimals = 2) => `${sym}${n.toFixed(decimals)}`;
 
 function ExpensesPage() {
@@ -35,13 +28,8 @@ function ExpensesPage() {
   const [month, setMonth] = useState(new Date());
   const [editing, setEditing] = useState<Expense | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [currency, setCurrency] = useState<string>(() => {
-    if (typeof window === "undefined") return "USD";
-    return localStorage.getItem("expense_currency") ?? "USD";
-  });
-  const curInfo = CURRENCIES.find(c => c.code === currency) ?? CURRENCIES[4];
-  const decimals = currency === "JPY" ? 0 : 2;
-  useEffect(() => { if (typeof window !== "undefined") localStorage.setItem("expense_currency", currency); }, [currency]);
+  const { code: currency, setCode: setCurrency, symbol, decimals } = useCurrency();
+  const curInfo = { symbol };
 
   useEffect(() => {
     if (!user) return;

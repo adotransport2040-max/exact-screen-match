@@ -117,11 +117,17 @@ function NotesPage() {
 function NoteEditor({ note, onSave, onClose, onDelete }: { note: Note; onSave: (n: Note) => void; onClose: () => void; onDelete: () => void }) {
   const [draft, setDraft] = useState(note);
   const [tagInput, setTagInput] = useState("");
-  const addTag = () => {
+  const commitTag = (current = draft): Note => {
     const t = tagInput.trim().toLowerCase();
-    if (!t || draft.tags.includes(t)) return;
-    setDraft({ ...draft, tags: [...draft.tags, t] });
+    if (!t || current.tags.includes(t)) return current;
+    const next = { ...current, tags: [...current.tags, t] };
+    setDraft(next);
     setTagInput("");
+    return next;
+  };
+  const handleSave = () => {
+    const finalDraft = commitTag();
+    onSave(finalDraft);
   };
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 backdrop-blur-sm sm:items-center">
@@ -142,15 +148,16 @@ function NoteEditor({ note, onSave, onClose, onDelete }: { note: Note; onSave: (
             </span>
           ))}
           <input value={tagInput} onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
-            placeholder="add tag (study, ideas, personal...)"
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); commitTag(); } }}
+            onBlur={() => commitTag()}
+            placeholder="add custom tag + Enter"
             className="rounded-full border bg-background px-2.5 py-1 text-xs outline-none focus:border-primary" />
         </div>
         <div className="mt-4 flex items-center gap-2">
           <button onClick={onDelete} className="rounded-xl p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
           <div className="flex-1" />
           <button onClick={onClose} className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
-          <button onClick={() => onSave(draft)} className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-elegant">Save</button>
+          <button onClick={handleSave} className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-elegant">Save</button>
         </div>
       </div>
     </div>
