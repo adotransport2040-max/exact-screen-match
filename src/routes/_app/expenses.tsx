@@ -28,13 +28,8 @@ function ExpensesPage() {
   const [month, setMonth] = useState(new Date());
   const [editing, setEditing] = useState<Expense | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [currency, setCurrency] = useState<string>(() => {
-    if (typeof window === "undefined") return "USD";
-    return localStorage.getItem("expense_currency") ?? "USD";
-  });
-  const curInfo = CURRENCIES.find(c => c.code === currency) ?? CURRENCIES[4];
-  const decimals = currency === "JPY" ? 0 : 2;
-  useEffect(() => { if (typeof window !== "undefined") localStorage.setItem("expense_currency", currency); }, [currency]);
+  const { code: currency, setCode: setCurrency, symbol, decimals } = useCurrency();
+  const curInfo = { symbol };
 
   useEffect(() => {
     if (!user) return;
