@@ -1,8 +1,0 @@
-[build]
-  command = "bun run build"
-  publish = "dist/client"
-
-[[redirects]]
-  from = "/*"
-  to = "/_shell.html"
-  status = 200
