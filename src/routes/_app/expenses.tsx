@@ -12,10 +12,12 @@ import { CURRENCIES, useCurrency } from "@/lib/currency";
 export const Route = createFileRoute("/_app/expenses")({ component: ExpensesPage });
 
 const CATEGORIES = ["Food", "Travel", "Study", "Misc"] as const;
-const COLORS: Record<string, string> = {
+const PALETTE = ["var(--color-success)", "var(--color-primary)", "var(--color-warning)", "var(--color-destructive)", "var(--color-chart-2)", "var(--color-chart-4)", "var(--color-chart-5)"];
+const BASE_COLORS: Record<string, string> = {
   Food: "var(--color-success)", Travel: "var(--color-primary)", Study: "var(--color-warning)", Misc: "var(--color-destructive)",
 };
 const ICONS: Record<string, any> = { Food: UtensilsCrossed, Travel: Plane, Study: GraduationCap, Misc: Package };
+const colorFor = (cat: string) => BASE_COLORS[cat] ?? PALETTE[Math.abs(cat.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % PALETTE.length];
 
 type Expense = { id: string; amount: number; category: string; description: string | null; expense_date: string };
 
@@ -49,10 +51,11 @@ function ExpensesPage() {
   const total = items.reduce((s, e) => s + Number(e.amount), 0);
   const delta = prevTotal === 0 ? 0 : ((total - prevTotal) / prevTotal) * 100;
 
-  const byCat = useMemo(() => CATEGORIES.map(c => ({
-    name: c,
-    value: items.filter(e => e.category === c).reduce((s, e) => s + Number(e.amount), 0),
-  })).filter(x => x.value > 0), [items]);
+  const byCat = useMemo(() => {
+    const map = new Map<string, number>();
+    items.forEach(e => map.set(e.category, (map.get(e.category) ?? 0) + Number(e.amount)));
+    return Array.from(map.entries()).map(([name, value]) => ({ name, value })).filter(x => x.value > 0).sort((a, b) => b.value - a.value);
+  }, [items]);
 
   const remove = async (id: string) => {
     setItems(arr => arr.filter(x => x.id !== id));
@@ -104,21 +107,22 @@ function ExpensesPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={byCat} dataKey="value" nameKey="name" innerRadius={36} outerRadius={56} paddingAngle={2}>
-                    {byCat.map(c => <Cell key={c.name} fill={COLORS[c.name]} />)}
+                    {byCat.map(c => <Cell key={c.name} fill={colorFor(c.name)} />)}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="flex-1 space-y-2">
               {byCat.map(c => {
-                const Icon = ICONS[c.name];
+                const Icon = ICONS[c.name] ?? Package;
                 const pct = (c.value / total) * 100;
+                const col = colorFor(c.name);
                 return (
                   <div key={c.name} className="flex items-center gap-2 text-sm">
-                    <div className="grid h-6 w-6 place-items-center rounded-md" style={{ background: `color-mix(in oklab, ${COLORS[c.name]} 15%, transparent)`, color: COLORS[c.name] }}>
+                    <div className="grid h-6 w-6 place-items-center rounded-md" style={{ background: `color-mix(in oklab, ${col} 15%, transparent)`, color: col }}>
                       <Icon className="h-3.5 w-3.5" />
                     </div>
-                    <span className="flex-1">{c.name}</span>
+                    <span className="flex-1 truncate">{c.name}</span>
                     <span className="font-semibold">{fmt(curInfo.symbol, c.value, 0)}</span>
                     <span className="w-9 text-right text-xs text-muted-foreground">{pct.toFixed(0)}%</span>
                   </div>
@@ -136,14 +140,15 @@ function ExpensesPage() {
           {items.length === 0 && <EmptyState title="No expenses yet" />}
           {items.map(e => {
             const Icon = ICONS[e.category] ?? Package;
+            const col = colorFor(e.category);
             return (
               <div key={e.id} className="flex items-center gap-3 rounded-xl bg-secondary/40 p-2.5">
-                <div className="grid h-9 w-9 place-items-center rounded-lg" style={{ background: `color-mix(in oklab, ${COLORS[e.category] ?? "var(--color-muted)"} 15%, transparent)`, color: COLORS[e.category] }}>
+                <div className="grid h-9 w-9 place-items-center rounded-lg" style={{ background: `color-mix(in oklab, ${col} 15%, transparent)`, color: col }}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">{e.description || e.category}</div>
-                  <div className="text-xs text-muted-foreground">{format(new Date(e.expense_date), "MMM d")}</div>
+                  <div className="text-xs text-muted-foreground">{e.category} · {format(new Date(e.expense_date), "MMM d")}</div>
                 </div>
                 <div className="text-sm font-semibold">{fmt(curInfo.symbol, Number(e.amount), decimals)}</div>
                 <button onClick={() => setEditing(e)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
@@ -182,9 +187,15 @@ function ExpensesPage() {
 
 function ExpenseModal({ initial, symbol, onSave, onClose }: { initial?: Expense; symbol: string; onSave: (p: Partial<Expense>) => void; onClose: () => void }) {
   const [amount, setAmount] = useState(initial?.amount?.toString() ?? "");
-  const [category, setCategory] = useState<string>(initial?.category ?? "Food");
+  const initialCat = initial?.category ?? "Food";
+  const isPreset = (CATEGORIES as readonly string[]).includes(initialCat);
+  const [categoryChoice, setCategoryChoice] = useState<string>(isPreset ? initialCat : "__custom__");
+  const [customCategory, setCustomCategory] = useState<string>(isPreset ? "" : initialCat);
   const [description, setDescription] = useState(initial?.description ?? "");
   const [date, setDate] = useState(initial?.expense_date ?? format(new Date(), "yyyy-MM-dd"));
+
+  const finalCategory = categoryChoice === "__custom__" ? customCategory.trim() : categoryChoice;
+  const canSave = !!amount && !!finalCategory;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 backdrop-blur-sm sm:items-center">
@@ -199,17 +210,23 @@ function ExpenseModal({ initial, symbol, onSave, onClose }: { initial?: Expense;
             <input type="number" step="0.01" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)}
               className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-3.5 text-sm outline-none focus:border-primary" />
           </div>
-          <input list="expense-categories" placeholder="Category (type or pick)" value={category} onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary" />
-          <datalist id="expense-categories">
-            {CATEGORIES.map(c => <option key={c} value={c} />)}
-          </datalist>
-          <input placeholder="Note" value={description ?? ""} onChange={(e) => setDescription(e.target.value)}
+          <label className="block text-xs font-medium text-muted-foreground">Category</label>
+          <select value={categoryChoice} onChange={(e) => setCategoryChoice(e.target.value)}
+            className="w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary">
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            <option value="__custom__">+ Custom category…</option>
+          </select>
+          {categoryChoice === "__custom__" && (
+            <input autoFocus placeholder="Type custom category (e.g. Health)" value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary" />
+          )}
+          <input placeholder="Note (optional)" value={description ?? ""} onChange={(e) => setDescription(e.target.value)}
             className="w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary" />
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
             className="w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary" />
         </div>
-        <button disabled={!amount} onClick={() => onSave({ amount: Number(amount), category, description: description || null, expense_date: date })}
+        <button disabled={!canSave} onClick={() => onSave({ amount: Number(amount), category: finalCategory, description: description || null, expense_date: date })}
           className="mt-4 w-full rounded-xl bg-gradient-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-elegant disabled:opacity-50">
           {initial ? "Save changes" : "Add expense"}
         </button>
