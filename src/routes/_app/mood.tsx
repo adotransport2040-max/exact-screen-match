@@ -83,14 +83,14 @@ function MoodPage() {
       <PageHeader title="Mood Tracker" subtitle="How are you feeling today?" />
 
       <Card>
-        <div className="grid grid-cols-5 gap-2 sm:grid-cols-5">
+        <div className="grid grid-cols-5 gap-2">
           {MOODS.map(m => (
-            <button key={m.key} onClick={() => setMood(m.key)}
-              title={m.label}
-              className={`flex flex-col items-center gap-1 rounded-2xl border p-3 transition active:scale-95 ${
-                todayMood === m.key ? "border-primary bg-accent shadow-elegant" : "hover:bg-accent"
+            <button key={m.key} type="button" onClick={() => setMood(m.key)}
+              title={m.label} aria-label={m.label} aria-pressed={todayMood === m.key}
+              className={`flex flex-col items-center gap-1 rounded-2xl border p-3 transition active:scale-95 cursor-pointer ${
+                todayMood === m.key ? "border-primary bg-accent shadow-elegant scale-105" : "hover:bg-accent hover:border-primary/50"
               }`}>
-              <span className="text-2xl sm:text-3xl">{m.emoji}</span>
+              <span className="text-2xl sm:text-3xl select-none" style={{ fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif' }}>{m.emoji}</span>
               <span className="text-[10px] font-medium">{m.label}</span>
             </button>
           ))}
