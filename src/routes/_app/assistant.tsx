@@ -4,6 +4,7 @@ import { PageHeader, Card } from "@/components/ui-kit";
 import {
   Bed, Dumbbell, Smartphone, BookOpen, Briefcase, Utensils, Users, Sparkles,
   Brain, Sun, Moon, HeartPulse, Coffee, GraduationCap, Code2, Plus, Trash2, RefreshCw,
+  Baby, Music, Plane, PenTool, Stethoscope, ShieldCheck, Building2, Leaf, Mountain, Globe,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/assistant")({ component: Assistant });
